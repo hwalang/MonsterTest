@@ -1,25 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Monster : MonoBehaviour
-{
-    public Transform target;
-    NavMeshAgent nmAgent;
+public class Monster
+{ 
+    private State state;
 
-
-    void Start()
+    public Monster(State state) // 어떤 상태가 들어올지 모르지만 일단 상태를 입력 받는다.
     {
-        nmAgent = GetComponent<NavMeshAgent>();
+        this.state = state;
     }
 
-    
-    void Update()
+    public void setState(State state)
     {
-        // 목적지를 설정한다.
-        // 목적지는 플레이어가 움직이면 변하기 때문에 Update에서 다룬다.
-        // 멀티 플레이에서는 가장 가까운 플레이어를 목적지로 설정한다.
-        nmAgent.SetDestination(target.position);
+        this.state = state;
+    }
+
+    public void act()   // 상태에 따른 행동을 자동으로 수행
+    {
+        state.Action();
     }
 }
