@@ -4,22 +4,74 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Monster
-{ 
-    private State state;
-
-    public Monster(State state) // 어떤 상태가 들어올지 모르지만 일단 상태를 입력 받는다.
+public class Monster : MonoBehaviour
+{
+    public enum MonsterState
     {
-        this.state = state;
+        IDLE,
+        CHASE,
+        ATTACK,
+        DIE,
     }
 
-    public void setState(State state)
+    public Animator animator;
+    public NavMeshAgent nmAgent;
+    public Transform target;
+    public float dest;
+
+    private MonsterState state;
+    private float HP = 0.0f;
+
+    private void Start()
     {
-        this.state = state;
+        animator = GetComponent<Animator>();
+        nmAgent = GetComponent<NavMeshAgent>();
+
+        state = MonsterState.IDLE;
+        HP = 10.0f;
+        StartCoroutine(StateMachine());
     }
 
-    public void act()   // 상태에 따른 행동을 자동으로 수행
+    IEnumerator StateMachine()
     {
-        state.Action();
+        while (HP > 0)
+        {
+            yield return StartCoroutine(state.ToString());
+        }
+    }
+
+    private void Update()
+    {
+        switch (state)
+        {
+            case MonsterState.IDLE:
+                Debug.Log("Monster - IDLE");
+                if (animator.GetBool("isNearPlayer"))
+                {
+                    state = MonsterState.ATTACK;
+                }
+                else
+                {
+                    state = MonsterState.CHASE;
+                }
+                break;
+            case MonsterState.CHASE:
+                Debug.Log("Monster - CHASE");
+                
+                break;
+            case MonsterState.ATTACK:
+                Debug.Log("Monster - ATTACK");
+                break;
+            case MonsterState.DIE:
+                Debug.Log("Monster - DIE");
+                state = MonsterState.DIE;
+                break;
+            
+        }
+    }
+
+    public void MoveAction()
+    {
+        animator.SetBool("Run", true);
     }
 }
