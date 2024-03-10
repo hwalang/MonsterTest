@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+//public enum MonsterState
+//{
+//    IDLE,
+//    CHASE,
+//    ATTACK,
+//    DIE,
+//}
+
 public class NavigationTest : MonoBehaviour
 {
     public Transform target;
-
-    public enum MonsterState
-    {
-        IDLE,
-        CHASE,
-        ATTACK,
-        DIE,
-    }
 
     public MonsterState curState = MonsterState.IDLE;
     public float chaseDist = 15.0f;

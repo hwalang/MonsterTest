@@ -3,86 +3,102 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+//public enum MonsterState
+//{
+//    IDLE,
+//    CHASE,
+//    ATTACK,
+//    DIE,
+//}
+
 public class MonsterController : MonoBehaviour
 {
-    
-    public enum MonsterState
+    private MonsterState _monsterState;
+
+    private void Awake()
     {
-        IDLE,
-        CHASE,
-        ATTACK,
-        DIE,
+        ChangeState(MonsterState.IDLE);
     }
 
-    public MonsterState curState = MonsterState.IDLE;
-    public float chaseDist = 15.0f;
-    public float attackDist = 2.0f;
-
-    private Transform _transform;
-    private Transform target;
-    private NavMeshAgent nmAgent;
-    private bool isDead = false;
-    private Animator _animator;
-
-    [System.Obsolete]
     void Start()
     {
-        _transform = GetComponent<Transform>();
-        nmAgent = GetComponent<NavMeshAgent>();
-        _animator = GetComponent<Animator>();
-
-        target = GameObject.FindWithTag("Player").GetComponent<Transform>();
-
-        StartCoroutine(CheckState());
-        StartCoroutine(CheckStateForAction());
+        //StartCoroutine(CheckState());
+        //StartCoroutine(CheckStateForAction());
     }
 
-    IEnumerator CheckState()
+    private void Update()
     {
-        while (!isDead)
+        // 각 행동이 발생하는 조건을 명시한다. -> Coroutine으로 하는게 성능상으로 좋다.
+        if (Input.GetKeyDown("1"))
         {
-            yield return new WaitForSeconds(0.2f);  // 0.2초마다 while문을 수행
-
-            float dist = Vector3.Distance(target.position, _transform.position);
-            if (dist <= attackDist)
-            {
-                curState = MonsterState.ATTACK;
-            }
-            else if (dist <= chaseDist)
-            {
-                curState = MonsterState.CHASE;
-            }
-            else
-            {
-                curState = MonsterState.IDLE;
-            }
+            ChangeState(MonsterState.IDLE);
+        }
+        else if (Input.GetKeyDown("2"))
+        {
+            ChangeState(MonsterState.CHASE);
+        }
+        else if ( Input.GetKeyDown("3"))
+        {
+            ChangeState(MonsterState.ATTACK);
+        }
+        else if ( Input.GetKeyDown("4"))
+        {
+            ChangeState(MonsterState.DIE);
         }
     }
 
-    [System.Obsolete]
-    IEnumerator CheckStateForAction()
+    private void ChangeState(MonsterState newState)
     {
-        while (!isDead)
-        {
-            switch (curState)
-            {
-                case MonsterState.IDLE:
-                    nmAgent.Stop();
-                    break;
-                case MonsterState.CHASE:
-                    nmAgent.destination = target.position;
-                    nmAgent.Resume();
-                    _animator.SetBool("isNearPlayer", false);
-                    break;
-                case MonsterState.ATTACK:
-                    _animator.SetBool("isNearPlayer", true);
-                    break;
-                case MonsterState.DIE:
-                    _animator.SetBool("isDie", true);
-                    break;
-            }
+        // 열거형 변수.ToString()으로 enum에 정의된 변수 이름을 string으로 반환 가능
+        // _monsterState = MonsterState.IDLE; => "IDLE" 반환
+        // 이를 이용해서 enum에 정의된 상태와 동일한 이름의 코루틴 메소드를 정의한다.
 
+
+        StopCoroutine(_monsterState.ToString());    // 이전 상태 코루틴 종료
+        _monsterState = newState;                   // 새로운 상태로 변경
+        StartCoroutine(_monsterState.ToString());   // 현재 상태의 코루틴 실행
+    }
+
+    private IEnumerator IDLE()
+    {
+        // while 이전은 현재 상태일 때, 1회 호출하는 로직을 작성
+        Debug.Log("비전투 상태로 변경");
+        Debug.Log("체력이 초당 10씩 자동 회복");
+
+        // 매 프레임 호출하는 내용 작성
+        while (true)
+        {
+            Debug.Log("몬스터가 제자리에서 대기중");
             yield return null;
         }
+
+        // while 이후는 현재 상태가 종료될 때, 1회 호출하는 로직 작성
+    }
+    private IEnumerator CHASE()
+    {
+        // 인식 범위 내에 있는 경우
+        Debug.Log("추격 상태로 변경");
+
+        while (true)
+        {
+            Debug.Log("몬스터가 플레이어를 추격");
+            yield return null;
+        }
+    }
+    private IEnumerator ATTACK()
+    {
+        Debug.Log("공격 상태로 변경");
+
+        // 공격 사거리 내부에 있는 경우
+        while (true)
+        {
+            Debug.Log("몬스터가 플레이어를 공격");
+            yield return null;
+        }
+    }
+    private IEnumerator DIE()
+    {
+        Debug.Log("사망 상태로 변경");
+        yield return null;
     }
 }
