@@ -164,21 +164,21 @@ public class Monster : EnemyBaseEntity
                 if (curState == MonsterState.ATTACK) continue;
                 ChangeState(MonsterState.ATTACK);
                 _animator.SetBool("isDetect", true);
-                _animator.SetBool("isNearPlayer", true);
+                _animator.SetBool("isPlayerInAttackRange", true);
             }
             else if (_detectPlayer != null)
             {
                 if (curState == MonsterState.CHASE) continue;
                 ChangeState(MonsterState.CHASE);
                 _animator.SetBool("isDetect", true);
-                _animator.SetBool("isNearPlayer", false);
+                _animator.SetBool("isPlayerInAttackRange", false);
             }
             else
             {
                 if (curState == MonsterState.IDLE) continue;
                 ChangeState(MonsterState.IDLE);
                 _animator.SetBool("isDetect", false);
-                _animator.SetBool("isNearPlayer", false);
+                _animator.SetBool("isPlayerInAttackRange", false);
             }
 
         }

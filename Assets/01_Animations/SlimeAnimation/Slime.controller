@@ -141,7 +141,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: isNearPlayer
+    m_ConditionEvent: isPlayerInAttackRange
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 718168530732554319}
@@ -178,7 +178,7 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 0}
-  - m_Name: isNearPlayer
+  - m_Name: isPlayerInAttackRange
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -291,7 +291,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: isNearPlayer
+    m_ConditionEvent: isPlayerInAttackRange
     m_EventTreshold: 0
   - m_ConditionMode: 1
     m_ConditionEvent: isDetect
@@ -322,7 +322,7 @@ AnimatorStateTransition:
     m_ConditionEvent: isDetect
     m_EventTreshold: 0
   - m_ConditionMode: 2
-    m_ConditionEvent: isNearPlayer
+    m_ConditionEvent: isPlayerInAttackRange
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -8874891182438929990}
@@ -347,7 +347,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: isNearPlayer
+    m_ConditionEvent: isPlayerInAttackRange
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -8874891182438929990}
