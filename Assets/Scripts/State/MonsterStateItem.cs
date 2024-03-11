@@ -40,14 +40,18 @@ namespace MonsterStateItem
 
         public override void Execute(Monster entity)
         {
+            // 장애물을 피해서 추격하는 코드를 작성해야함
+            // NavMeshAgent 사용할까..?
+
             entity.PrintText("플레이어를 추격 중...");
 
             Vector3 thisToTargetDist = entity.DetectPlayer.position - entity.transform.position;
-            Quaternion rotation = Quaternion.LookRotation(thisToTargetDist, Vector3.up);
+            Vector3 dirToTarget = new Vector3(thisToTargetDist.x, 0, thisToTargetDist.z);
+
+            Quaternion rotation = Quaternion.LookRotation(dirToTarget.normalized, Vector3.up);
             entity.transform.rotation = rotation;
 
-            entity.transform.Translate(thisToTargetDist.normalized * entity.MoveSpeed * Time.deltaTime);
-            
+            entity.transform.Translate(dirToTarget.normalized * entity.MoveSpeed * Time.deltaTime, Space.World);
         }
 
         public override void Exit(Monster entity)
@@ -68,6 +72,15 @@ namespace MonsterStateItem
             entity.PrintText("플레이어 공격");
 
             // 플레이어 바라보기
+            Vector3 thisToTargetDist = entity.AttackPlayer.position - entity.transform.position;
+            Vector3 dirToTarget = new Vector3(thisToTargetDist.x, 0, thisToTargetDist.z);
+
+            Quaternion rotation = Quaternion.LookRotation(dirToTarget.normalized, Vector3.up);
+            entity.transform.rotation = rotation;
+
+            // 플레이어 공격 -> 플레이어의 HP를 몬스터의 ATTACK만큼 차감 : 명성이랑 해야함
+            // entity.AttackPlayer
+            // entity.Attack
         }
 
         public override void Exit(Monster entity)
@@ -87,9 +100,9 @@ namespace MonsterStateItem
 
         public override void Execute(Monster entity)
         {
-            // 플레이어 부활 조건 확인
-            // 1. 스테이지가 바뀐 경우
-            // entity.RevertToPreviousState();
+            // 몬스터 객체 제거
+            // GameController의 배열에서 제거 및 null 부여
+            
         }
 
         public override void Exit(Monster entity)
