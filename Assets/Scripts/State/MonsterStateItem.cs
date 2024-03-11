@@ -23,13 +23,6 @@ namespace MonsterStateItem
                 entity.Hp = entity.MaxHp;
             }
 
-            // OnTriggerEnter로 DetectPlayer를 true로 설정
-            // 인식 범위에 들어온 플레이어를 추격
-            if (entity.DetectPlayer)             
-            {
-                entity.ChangeState(MonsterState.CHASE);
-            }
-
             entity.PrintText("자동 회복 중...");
         }
 
@@ -60,19 +53,9 @@ namespace MonsterStateItem
             //entity.PrintText(thisToTargetDist.ToString());
             //entity.PrintText("거리차이: " + Mathf.Abs(thisToTargetDist - entity.AttackRange).ToString());
 
-            if (_target == null)    // 플레이어 사망
-            {
-                entity.ChangeState(MonsterState.IDLE);
-            }
-            else if (Mathf.Abs(thisToTargetDist - entity.AttackRange) <= 0.1f)    // 공격 범위 내에 플레이어가 있으면 "공격" 상태로 변경
-            {
-                entity.ChangeState(MonsterState.ATTACK);
-            }
-            else if (!entity.DetectPlayer) // 플레이어가 인식 범위를 벗어남
-            {
-                entity.ChangeState(MonsterState.IDLE);
-            }
-            
+            // 플레이어 바라보기
+
+            // 플레이어한테 이동하기
         }
 
         public override void Exit(Monster entity)
@@ -85,13 +68,14 @@ namespace MonsterStateItem
     {
         public override void Enter(Monster entity)
         {
-            // 애니메이션 할당
             entity.PrintText("공격 범위 내에 들어온 플레이어 확인");
         }
 
         public override void Execute(Monster entity)
         {
             entity.PrintText("플레이어 공격");
+
+            // 플레이어 바라보기
         }
 
         public override void Exit(Monster entity)
@@ -137,6 +121,7 @@ namespace MonsterStateItem
 
             if (entity.Hp <= 0)
             {
+                entity.Hp = 0;
                 entity.ChangeState(MonsterState.DIE);
             }
             // 여기에 확률적으로 사용하는 패턴( 상태 )을 넣어도 된다.

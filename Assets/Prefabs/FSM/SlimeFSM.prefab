@@ -447,7 +447,6 @@ GameObject:
   - component: {fileID: 6220961142061027668}
   - component: {fileID: 6812265931513071365}
   - component: {fileID: 8045050193496357591}
-  - component: {fileID: 5274623140983825088}
   - component: {fileID: 5048220239151669642}
   m_Layer: 6
   m_Name: SlimeFSM
@@ -521,27 +520,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!135 &5274623140983825088
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7002153614917130504}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 10
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &5048220239151669642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -554,3 +532,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89fa59b996f5aa44d9a1f9da31f3b1df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _detectPlayer: {fileID: 0}
+  _attackPlayer: {fileID: 0}
+  _hp: 0
+  _attackRange: 0
+  _detectRange: 0
