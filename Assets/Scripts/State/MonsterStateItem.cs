@@ -33,12 +33,8 @@ namespace MonsterStateItem
     }
     public class CHASE : State<Monster>
     {
-        private Transform _target;
-
         public override void Enter(Monster entity)
         {
-            _target = GameObject.FindGameObjectWithTag("Player").transform;
-
             entity.PrintText("인식 범위 내에 들어온 플레이어 확인");
         }
 
@@ -46,16 +42,12 @@ namespace MonsterStateItem
         {
             entity.PrintText("플레이어를 추격 중...");
 
-            float thisToTargetDist = Vector3.Distance(
-                GameObject.FindGameObjectWithTag("Player").transform.position,
-                entity.transform.position);
+            Vector3 thisToTargetDist = entity.DetectPlayer.position - entity.transform.position;
+            Quaternion rotation = Quaternion.LookRotation(thisToTargetDist, Vector3.up);
+            entity.transform.rotation = rotation;
 
-            //entity.PrintText(thisToTargetDist.ToString());
-            //entity.PrintText("거리차이: " + Mathf.Abs(thisToTargetDist - entity.AttackRange).ToString());
-
-            // 플레이어 바라보기
-
-            // 플레이어한테 이동하기
+            entity.transform.Translate(thisToTargetDist.normalized * entity.MoveSpeed * Time.deltaTime);
+            
         }
 
         public override void Exit(Monster entity)

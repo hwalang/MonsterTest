@@ -29,6 +29,7 @@ public class Monster : EnemyBaseEntity
     private int _hp;
     private int _maxHp;
     private int _attack;
+    [SerializeField]
     private float _moveSpeed;
     [SerializeField]
     private float _attackRange;
@@ -39,6 +40,16 @@ public class Monster : EnemyBaseEntity
     private StateMachine<Monster> stateMachine;     // 상태 관리를 StateMachine에 위임
     public MonsterState curState { private set; get; }  // 현재 상태, Global State와 prievState를 대비
 
+    public Transform DetectPlayer
+    {
+        set => _detectPlayer = value;
+        get => _detectPlayer;
+    }
+    public Transform AttackPlayer
+    {
+        set => _attackPlayer = value;
+        get => _attackPlayer;
+    }
     public int Level
     {
         set => _level = value;
@@ -126,12 +137,12 @@ public class Monster : EnemyBaseEntity
             for (int i = 0; i < targetPlayers.Length; ++i)
             {
                 PrintText($"공격 사정거리 내의 플레이어를 {targetPlayers.Length}만큼 인식");
-                _attackPlayer = targetPlayers[i].gameObject.transform;
+                AttackPlayer = targetPlayers[i].gameObject.transform;
             }
         }
         else
         {
-            _attackPlayer = null;
+            AttackPlayer = null;
         }
 
         if (detectPlayers.Length > 0)
@@ -139,12 +150,12 @@ public class Monster : EnemyBaseEntity
             for (int i = 0; i < detectPlayers.Length; ++i)
             {
                 PrintText($"플레이어를 {detectPlayers.Length}만큼 인식");
-                _detectPlayer = detectPlayers[i].gameObject.transform;
+               DetectPlayer = detectPlayers[i].gameObject.transform;
             }
         }
         else
         {
-            _detectPlayer = null;
+            DetectPlayer = null;
         }
     }
 
@@ -159,14 +170,14 @@ public class Monster : EnemyBaseEntity
 
             _animator.SetBool("isDie", false);
 
-            if (_attackPlayer != null)
+            if (AttackPlayer != null)
             {
                 if (curState == MonsterState.ATTACK) continue;
                 ChangeState(MonsterState.ATTACK);
                 _animator.SetBool("isDetect", true);
                 _animator.SetBool("isPlayerInAttackRange", true);
             }
-            else if (_detectPlayer != null)
+            else if (DetectPlayer != null)
             {
                 if (curState == MonsterState.CHASE) continue;
                 ChangeState(MonsterState.CHASE);
