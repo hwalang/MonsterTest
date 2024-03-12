@@ -196,7 +196,6 @@ public class Monster : EnemyBaseEntity
 
         ChangeState(MonsterState.DIE);
         _animator.SetBool("isDie", true);
-        // Destroy(this, 1.5f);
     }
 
     public void ChangeState(MonsterState newState)

@@ -21,6 +21,7 @@ public class GameController : MonoBehaviour
 
     public static bool IsGameStop { set; get; } = false;
 
+
     private void Awake()
     {
         entitys = new List<EnemyBaseEntity>();
@@ -42,6 +43,12 @@ public class GameController : MonoBehaviour
         // 모든 monsterEntity를 동작시키기 위해서 Updated()를 호출한다.
         for (int i = 0; i < entitys.Count; ++i)
         {
+            //if (entitys[i].GetComponent<Monster>().Hp < 0)
+            //{
+            //    Destroy(entitys[i], 3.0f);
+            //    entitys[i] = null;
+            //    continue;
+            //}
             entitys[i].Updated();
         }
     }
