@@ -47,7 +47,7 @@ namespace MonsterStateItem
             entity.transform.rotation = rotation;
 
             entity.transform.Translate(thisToTargetDist.normalized * entity.MoveSpeed * Time.deltaTime);
-            
+
         }
 
         public override void Exit(Monster entity)

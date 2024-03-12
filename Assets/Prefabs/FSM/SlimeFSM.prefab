@@ -448,6 +448,7 @@ GameObject:
   - component: {fileID: 6812265931513071365}
   - component: {fileID: 8045050193496357591}
   - component: {fileID: 5048220239151669642}
+  - component: {fileID: -501289312212670002}
   m_Layer: 6
   m_Name: SlimeFSM
   m_TagString: Untagged
@@ -535,5 +536,28 @@ MonoBehaviour:
   _detectPlayer: {fileID: 0}
   _attackPlayer: {fileID: 0}
   _hp: 0
+  _moveSpeed: 0
   _attackRange: 0
   _detectRange: 0
+--- !u!195 &-501289312212670002
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7002153614917130504}
+  m_Enabled: 1
+  m_AgentTypeID: -334000983
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 1
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
