@@ -1,14 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace MonsterStateItem
 {
     public class IDLE : State<Monster>
     {
+        NavMeshAgent _agent;
+
         public override void Enter(Monster entity)
         {
             entity.PrintText($"대기중");
+            _agent = entity.GetComponent<NavMeshAgent>();
+            _agent.speed = 0;
         }
 
         public override void Execute(Monster entity)
@@ -33,9 +38,13 @@ namespace MonsterStateItem
     }
     public class CHASE : State<Monster>
     {
+        NavMeshAgent _agent;
+
         public override void Enter(Monster entity)
         {
             entity.PrintText("인식 범위 내에 들어온 플레이어 확인");
+            _agent = entity.GetComponent<NavMeshAgent>();
+            _agent.speed = entity.MoveSpeed;
         }
 
         public override void Execute(Monster entity)
@@ -51,7 +60,8 @@ namespace MonsterStateItem
             Quaternion rotation = Quaternion.LookRotation(dirToTarget.normalized, Vector3.up);
             entity.transform.rotation = rotation;
 
-            entity.transform.Translate(dirToTarget.normalized * entity.MoveSpeed * Time.deltaTime, Space.World);
+            //entity.transform.Translate(dirToTarget.normalized * entity.MoveSpeed * Time.deltaTime, Space.World);
+            _agent.SetDestination(entity.DetectPlayer.position);
         }
 
         public override void Exit(Monster entity)
@@ -62,9 +72,13 @@ namespace MonsterStateItem
     }
     public class ATTACK : State<Monster>
     {
+        NavMeshAgent _agent;
+
         public override void Enter(Monster entity)
         {
             entity.PrintText("공격 범위 내에 들어온 플레이어 확인");
+            _agent = entity.GetComponent<NavMeshAgent>();
+            _agent.speed = 0;
         }
 
         public override void Execute(Monster entity)

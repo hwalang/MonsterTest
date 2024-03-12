@@ -1,104 +1,69 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.AI;
 
-//public enum MonsterState
-//{
-//    IDLE,
-//    CHASE,
-//    ATTACK,
-//    DIE,
-//}
+// Agent가 이동할 수 있는 장소 => 나타나는 스테이지를 지정할 때 사용해보자.
+public enum Location
+{
+    GROUND = 0,
+};
 
 public class MonsterController : MonoBehaviour
 {
-    private MonsterState _monsterState;
+    // TYPE이 늘어나면 이러한 배열과 prefab 변수를 추가한다.
+    [SerializeField]
+    private string[] arrayMonsters;     // monster 이름 배열, Inspector view에서 직접 입력
+    [SerializeField]
+    private GameObject monsterPrefab;   // monster TYPE prefab
+
+    private List<EnemyBaseEntity> entitys;  // Monster, Player 등 게임 상의 모든 entity를 담을 수 있다.
+
+    public static bool IsGameStop { set; get; } = false;
+
 
     private void Awake()
     {
-        ChangeState(MonsterState.IDLE);
-    }
+        entitys = new List<EnemyBaseEntity>();
 
-    void Start()
-    {
-        //StartCoroutine(CheckState());
-        //StartCoroutine(CheckStateForAction());
+        for (int i = 0; i < arrayMonsters.Length; i++)
+        {
+            Vector3 pos = new Vector3(5 + i, 0, 5 + i);
+            GameObject clone = Instantiate(monsterPrefab, pos, Quaternion.identity);
+            Monster monsterEntity = clone.GetComponent<Monster>();
+            monsterEntity.Setup(arrayMonsters[i]);
+
+            entitys.Add(monsterEntity);
+        }
     }
 
     private void Update()
     {
-        // 각 행동이 발생하는 조건을 명시한다. -> Coroutine으로 하는게 성능상으로 좋다.
-        if (Input.GetKeyDown("1"))
+        if (IsGameStop == true) return;
+
+        // 모든 monsterEntity를 동작시키기 위해서 Updated()를 호출한다.
+        for (int i = 0; i < entitys.Count; ++i)
         {
-            ChangeState(MonsterState.IDLE);
-        }
-        else if (Input.GetKeyDown("2"))
-        {
-            ChangeState(MonsterState.CHASE);
-        }
-        else if ( Input.GetKeyDown("3"))
-        {
-            ChangeState(MonsterState.ATTACK);
-        }
-        else if ( Input.GetKeyDown("4"))
-        {
-            ChangeState(MonsterState.DIE);
+            //if (entitys[i].GetComponent<Monster>().Hp < 0)
+            //{
+            //    Destroy(entitys[i], 3.0f);
+            //    entitys[i] = null;
+            //    continue;
+            //}
+            entitys[i].Updated();
         }
     }
 
-    private void ChangeState(MonsterState newState)
+    private void FixedUpdate()
     {
-        // 열거형 변수.ToString()으로 enum에 정의된 변수 이름을 string으로 반환 가능
-        // _monsterState = MonsterState.IDLE; => "IDLE" 반환
-        // 이를 이용해서 enum에 정의된 상태와 동일한 이름의 코루틴 메소드를 정의한다.
-
-
-        StopCoroutine(_monsterState.ToString());    // 이전 상태 코루틴 종료
-        _monsterState = newState;                   // 새로운 상태로 변경
-        StartCoroutine(_monsterState.ToString());   // 현재 상태의 코루틴 실행
-    }
-
-    private IEnumerator IDLE()
-    {
-        // while 이전은 현재 상태일 때, 1회 호출하는 로직을 작성
-        Debug.Log("비전투 상태로 변경");
-        Debug.Log("체력이 초당 10씩 자동 회복");
-
-        // 매 프레임 호출하는 내용 작성
-        while (true)
+        for (int i = 0; i < entitys.Count; ++i)
         {
-            Debug.Log("몬스터가 제자리에서 대기중");
-            yield return null;
-        }
-
-        // while 이후는 현재 상태가 종료될 때, 1회 호출하는 로직 작성
-    }
-    private IEnumerator CHASE()
-    {
-        // 인식 범위 내에 있는 경우
-        Debug.Log("추격 상태로 변경");
-
-        while (true)
-        {
-            Debug.Log("몬스터가 플레이어를 추격");
-            yield return null;
+            entitys[i].GetComponent<Monster>().FreezeVelocity();
         }
     }
-    private IEnumerator ATTACK()
-    {
-        Debug.Log("공격 상태로 변경");
 
-        // 공격 사거리 내부에 있는 경우
-        while (true)
-        {
-            Debug.Log("몬스터가 플레이어를 공격");
-            yield return null;
-        }
-    }
-    private IEnumerator DIE()
+    public static void Stop(EnemyBaseEntity entity)
     {
-        Debug.Log("사망 상태로 변경");
-        yield return null;
+        IsGameStop = true;
     }
 }

@@ -200,7 +200,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8398131903247874418}
   - component: {fileID: 1304425126147424801}
-  - component: {fileID: 43205339118036477}
   m_Layer: 6
   m_Name: Slime
   m_TagString: Untagged
@@ -286,27 +285,6 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.3588662, y: 0.1749603, z: 0.000000059604645}
     m_Extent: {x: 0.62954795, y: 0.6683546, z: 0.4895594}
   m_DirtyAABB: 0
---- !u!135 &43205339118036477
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3008445678502634943}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5290547
-  m_Center: {x: 0.000000059604645, y: -1.161748e-16, z: 0.4918248}
 --- !u!1 &4114564310773993744
 GameObject:
   m_ObjectHideFlags: 0
@@ -318,9 +296,9 @@ GameObject:
   - component: {fileID: 2591756626867548029}
   - component: {fileID: 7495941750188469810}
   - component: {fileID: 337254626554879599}
-  - component: {fileID: 3680457233097526476}
   - component: {fileID: 7444845028666219718}
   - component: {fileID: -4238474562878795740}
+  - component: {fileID: -7238091323257987624}
   m_Layer: 6
   m_Name: Slime
   m_TagString: Untagged
@@ -393,27 +371,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!135 &3680457233097526476
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4114564310773993744}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 10
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!195 &7444845028666219718
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -452,6 +409,27 @@ MonoBehaviour:
   curState: 0
   chaseDist: 10
   attackDist: 2
+--- !u!65 &-7238091323257987624
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4114564310773993744}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 64
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1 &4443353243251408540
 GameObject:
   m_ObjectHideFlags: 0

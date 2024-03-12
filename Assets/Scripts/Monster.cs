@@ -23,12 +23,14 @@ public class Monster : EnemyBaseEntity
     [SerializeField]
     private Transform _attackPlayer;
     private Animator _animator;
+    private Rigidbody _rigidbody;
+    private NavMeshAgent _agent;
 
     private int _level;         // 스테이지 올라가면 몬스터도 강해지는 경우 필요
     [SerializeField]
     private int _hp;
     private int _maxHp;
-    private int _attack;
+    private int _damage;
     [SerializeField]
     private float _moveSpeed;
     [SerializeField]
@@ -38,8 +40,13 @@ public class Monster : EnemyBaseEntity
 
     private State<Monster>[] states;     // Monster의 모든 상태 정보
     private StateMachine<Monster> stateMachine;     // 상태 관리를 StateMachine에 위임
-    public MonsterState curState { private set; get; }  // 현재 상태, Global State와 prievState를 대비
 
+    private Coroutine updateDetectPlayer;
+    private Coroutine updateAttackPlayer;
+    private Coroutine checkMonsterState;
+
+    public MonsterState curState { private set; get; }  // 현재 상태, Global State와 prievState를 대비
+    public NavMeshAgent Agent { private set; get; }
     public Transform DetectPlayer
     {
         set => _detectPlayer = value;
@@ -65,10 +72,10 @@ public class Monster : EnemyBaseEntity
         set => _maxHp = value; 
         get => _maxHp;
     }
-    public int Attack
+    public int Damage
     {
-        set => _attack = value;
-        get => _attack;
+        set => _damage = value;
+        get => _damage;
     }
     public float MoveSpeed
     {
@@ -105,39 +112,57 @@ public class Monster : EnemyBaseEntity
         stateMachine.SetGlobalState(states[(int)MonsterState.GLOBAL]);  // 전역 상태 설정
 
         _animator = GetComponent<Animator>();
-        _animator.SetBool("isDetect", false);
+        _rigidbody = GetComponent<Rigidbody>();
+        _agent = GetComponent<NavMeshAgent>();
+
         _level = 1;
         _hp = 100;
         _maxHp = 100;
-        _attack = 5;
+        _damage = 5;
         _moveSpeed = 2.0f;
-        _attackRange = 1.2f;
-        _detectRange = 10.0f;
+        _attackRange = 1.8f;
+        _agent.stoppingDistance = 1.5f;
+        _detectRange = 15.0f;
 
-        // UpdateTarget 함수를 0.3초마다 호출
-        // InvokeRepeating("UpdateTarget", 0f, 0.3f);      
-        // 몬스터 상태 체크
-        StartCoroutine(CheckMonsterState());
+        //updateAttackPlayer = StartCoroutine(UpdateAttackPlayer());
+        //updateDetectPlayer = StartCoroutine(UpdateDetectPlayer());
+        checkMonsterState = StartCoroutine(CheckMonsterState());
     }
 
     public override void Updated()
     {
+        
         // stateMachine 실행
         stateMachine.Execute();
     }
 
-    private void UpdateTarget()
+    // 캐릭터에게 물리력을 받아도 밀려나는 가속도로 인해 이동에 방해받지 않는다.
+    public void FreezeVelocity()
+    {
+        _rigidbody.velocity = Vector3.zero;
+    }
+
+    // 인식 범위 내의 플레이어를 갱신
+    private void UpdateDetectPlayer()
     {
         // 범위 내의 Player layer의 객체를 저장
         Collider[] detectPlayers = Physics.OverlapSphere(transform.position, DetectRange, 1 << 7);
         Collider[] targetPlayers = Physics.OverlapSphere(transform.position, AttackRange, 1 << 7);
-        
+        //Physics.OverlapBoxNonAlloc() 인식하는 범위가 명확하면 메모리를 아낄 수 있기 때문에 더 좋다.
+
+        float minDistAttack = AttackRange;
         if (targetPlayers.Length > 0)
         {
             for (int i = 0; i < targetPlayers.Length; ++i)
             {
+                float dist = Vector3.Distance(this.transform.position, targetPlayers[i].transform.position);
+                PrintText($"dist: {dist}");
                 PrintText($"공격 사정거리 내의 플레이어를 {targetPlayers.Length}만큼 인식");
-                AttackPlayer = targetPlayers[i].gameObject.transform;
+                if (minDistAttack > dist)
+                {
+                    minDistAttack = dist;
+                    AttackPlayer = targetPlayers[i].gameObject.transform;
+                }
             }
         }
         else
@@ -145,57 +170,93 @@ public class Monster : EnemyBaseEntity
             AttackPlayer = null;
         }
 
+        float minDistDetect = DetectRange;
         if (detectPlayers.Length > 0)
         {
             for (int i = 0; i < detectPlayers.Length; ++i)
             {
+                float dist = Vector3.Distance(this.transform.position, detectPlayers[i].transform.position);
                 PrintText($"플레이어를 {detectPlayers.Length}만큼 인식");
-               DetectPlayer = detectPlayers[i].gameObject.transform;
+                if (minDistDetect > dist)
+                {
+                    minDistDetect = dist;
+                    DetectPlayer = detectPlayers[i].gameObject.transform;
+                }
             }
         }
         else
         {
             DetectPlayer = null;
         }
+
+        minDistAttack = AttackRange;
+        minDistDetect = DetectRange;
+    }
+
+    // 공격 범위 내의 플레이어 갱신
+    IEnumerator UpdateAttackPlayer()
+    {
+        yield return null;
+
+        Collider[] attackPlayers = Physics.OverlapSphere(transform.position, AttackRange, 1 << 7);
+
+        float minDist = AttackRange;
+        for (int i = 0; i < attackPlayers.Length; i++)
+        {
+            Transform target = attackPlayers[i].gameObject.transform;
+            if (minDist > Vector3.Distance(this.transform.position, target.position))
+            {
+                AttackPlayer = target;
+                Debug.Log("target: " + AttackPlayer);
+            }
+        }
     }
 
     // Monster State를 바꿔주는 함수
     IEnumerator CheckMonsterState()
     {
-        while (Hp > 0 && _animator.GetBool("isDie") == false)
+        while (Hp > 0)
         {
-            yield return new WaitForSeconds(0.3f);
-
-            UpdateTarget();
+            // yield return new WaitForSeconds(0.3f);
+            yield return null;
+            UpdateDetectPlayer();
 
             _animator.SetBool("isDie", false);
 
             if (AttackPlayer != null)
             {
                 if (curState == MonsterState.ATTACK) continue;
-                ChangeState(MonsterState.ATTACK);
+                
                 _animator.SetBool("isDetect", true);
                 _animator.SetBool("isPlayerInAttackRange", true);
+                DetectPlayer = null;
+                ChangeState(MonsterState.ATTACK);
             }
             else if (DetectPlayer != null)
             {
                 if (curState == MonsterState.CHASE) continue;
-                ChangeState(MonsterState.CHASE);
+                
                 _animator.SetBool("isDetect", true);
                 _animator.SetBool("isPlayerInAttackRange", false);
+                AttackPlayer = null;
+                ChangeState(MonsterState.CHASE);
             }
             else
             {
                 if (curState == MonsterState.IDLE) continue;
-                ChangeState(MonsterState.IDLE);
+                
                 _animator.SetBool("isDetect", false);
                 _animator.SetBool("isPlayerInAttackRange", false);
+                DetectPlayer = null;
+                AttackPlayer = null;
+                ChangeState(MonsterState.IDLE);
             }
 
         }
 
-        ChangeState(MonsterState.DIE);
+        
         _animator.SetBool("isDie", true);
+        ChangeState(MonsterState.DIE);
     }
 
     public void ChangeState(MonsterState newState)
@@ -211,8 +272,4 @@ public class Monster : EnemyBaseEntity
     {
         stateMachine.RevertToPreviousState();
     }
-
-    // 공격 범위에 플레이어가 탐지된 경우, 플레이어를 공격한다.
-    //      - 단순 거리 계산 + 가까워진 플레이어에 한해서 ray를 통해 플레이어를 인식
-    //      - 벽 너머의 보이지 않는 플레이어를 인식하는 것을 방지한다.
 }
