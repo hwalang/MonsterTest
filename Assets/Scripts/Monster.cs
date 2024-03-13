@@ -219,6 +219,7 @@ public class Monster : EnemyBaseEntity
         {
             // yield return new WaitForSeconds(0.3f);
             yield return null;
+
             UpdateDetectPlayer();
 
             _animator.SetBool("isDie", false);
@@ -229,7 +230,6 @@ public class Monster : EnemyBaseEntity
                 
                 _animator.SetBool("isDetect", true);
                 _animator.SetBool("isPlayerInAttackRange", true);
-                DetectPlayer = null;
                 ChangeState(MonsterState.ATTACK);
             }
             else if (DetectPlayer != null)
@@ -238,7 +238,6 @@ public class Monster : EnemyBaseEntity
                 
                 _animator.SetBool("isDetect", true);
                 _animator.SetBool("isPlayerInAttackRange", false);
-                AttackPlayer = null;
                 ChangeState(MonsterState.CHASE);
             }
             else
